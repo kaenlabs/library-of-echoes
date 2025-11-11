@@ -10,10 +10,10 @@
 ## ✅ İLERLEME TAKIBI
 
 ### Faz 1: Proje Kurulumu ve Git Yapılandırması
-- [ ] Git repository oluşturma
-- [ ] Temel dizin yapısı kurulumu
-- [ ] README ve dokümantasyon hazırlama
-- [ ] .gitignore ve temel config dosyaları
+- [x] Git repository oluşturma
+- [x] Temel dizin yapısı kurulumu
+- [x] README ve dokümantasyon hazırlama
+- [x] .gitignore ve temel config dosyaları
 
 ### Faz 2: Backend (Supabase) Kurulumu
 - [ ] Supabase projesi oluşturma
@@ -96,12 +96,12 @@
 ---
 
 ## 🎯 ŞU ANKİ ADIM
-**Faz 1: Proje Kurulumu ve Git Yapılandırması**
+**Faz 2: Backend (Supabase) Kurulumu**
 
 Yapılacaklar:
-1. Git repository başlatma
-2. Temel dizin yapısını oluşturma
-3. GitHub'a proje push etme
+1. Backend dizin yapısını oluşturma
+2. Supabase schema.sql dosyasını hazırlama
+3. Veritabanı tablolarını tasarlama (epochs, layers, rooms, messages)
 
 ---
 
