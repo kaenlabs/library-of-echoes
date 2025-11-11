@@ -20,17 +20,14 @@ CREATE TABLE IF NOT EXISTS epochs (
     is_active BOOLEAN DEFAULT true,              -- Only one epoch can be active at a time
     created_at TIMESTAMP DEFAULT NOW(),
     closed_at TIMESTAMP,
-    stats JSONB,                                 -- Stores final statistics when epoch closes
-    
-    -- Constraints
-    CONSTRAINT unique_active_epoch CHECK (
-        (is_active = false) OR 
-        (is_active = true AND id = (SELECT id FROM epochs WHERE is_active = true LIMIT 1))
-    )
+    stats JSONB                                  -- Stores final statistics when epoch closes
 );
 
 -- Index for faster active epoch lookup
 CREATE INDEX idx_epochs_active ON epochs(is_active) WHERE is_active = true;
+
+-- Ensure only one active epoch at a time (using unique partial index)
+CREATE UNIQUE INDEX unique_active_epoch ON epochs(is_active) WHERE is_active = true;
 
 -- ================================================
 -- TABLE: layers (Katmanlar)
