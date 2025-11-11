@@ -16,31 +16,31 @@
 - [x] .gitignore ve temel config dosyaları
 
 ### Faz 2: Backend (Supabase) Kurulumu
-- [ ] Supabase projesi oluşturma
-- [ ] Veritabanı şeması tasarımı
-  - [ ] `epochs` tablosu
-  - [ ] `layers` tablosu
-  - [ ] `rooms` tablosu
-  - [ ] `messages` tablosu
-- [ ] İlk epoch ve layer kayıtlarını oluşturma
-- [ ] API endpoint'leri tasarımı
-  - [ ] POST /api/messages
-  - [ ] GET /api/state
-  - [ ] GET /api/epoch-summary
+- [x] Supabase projesi oluşturma (Kullanıcının yapması gerekiyor)
+- [x] Veritabanı şeması tasarımı
+  - [x] `epochs` tablosu
+  - [x] `layers` tablosu
+  - [x] `rooms` tablosu
+  - [x] `messages` tablosu
+- [x] İlk epoch ve layer kayıtlarını oluşturma
+- [x] API endpoint'leri tasarımı
+  - [x] POST /api/messages
+  - [x] GET /api/state
+  - [x] GET /api/epoch-summary
 
 ### Faz 3: Web Frontend (Next.js) - MVP
-- [ ] Next.js 15 projesi kurulumu
-- [ ] TypeScript konfigürasyonu
-- [ ] Temel sayfa yapısı
-  - [ ] Ana giriş sayfası (input)
-  - [ ] Sistem mesaj bileşeni
-  - [ ] Katman görselleştirici
-- [ ] Supabase bağlantısı
-- [ ] API route'ları implementasyonu
-- [ ] CSS temaları ve animasyonlar
-  - [ ] Katman I-IX CSS stilleri
-  - [ ] Glitch ve fade efektleri
-  - [ ] Katman geçiş animasyonları
+- [x] Next.js 15 projesi kurulumu
+- [x] TypeScript konfigürasyonu
+- [x] Temel sayfa yapısı
+  - [x] Ana giriş sayfası (input)
+  - [x] Sistem mesaj bileşeni
+  - [x] Katman görselleştirici
+- [x] Supabase bağlantısı
+- [x] API route'ları implementasyonu
+- [x] CSS temaları ve animasyonlar
+  - [x] Katman I-IX CSS stilleri
+  - [x] Glitch ve fade efektleri
+  - [x] Katman geçiş animasyonları
 
 ### Faz 4: Mobile Frontend (React Native/Expo) - MVP
 - [ ] Expo projesi kurulumu
@@ -96,12 +96,14 @@
 ---
 
 ## 🎯 ŞU ANKİ ADIM
-**Faz 2: Backend (Supabase) Kurulumu**
+**SUPABASE KURULUMU GEREKLİ**
 
-Yapılacaklar:
-1. Backend dizin yapısını oluşturma
-2. Supabase schema.sql dosyasını hazırlama
-3. Veritabanı tablolarını tasarlama (epochs, layers, rooms, messages)
+Sıradaki Adımlar:
+1. ✅ Backend ve Web frontend kodu tamamlandı
+2. ⏳ Supabase projesi oluşturulması gerekiyor
+3. ⏳ Environment variables (.env.local) ayarlanması gerekiyor
+4. ⏳ Web uygulamasını test etme
+5. ⏳ Mobile uygulama geliştirme (Expo)
 
 ---
 
