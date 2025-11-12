@@ -32,7 +32,11 @@ interface Stats {
   };
 }
 
-export default function StatsPanel() {
+interface StatsPanelProps {
+  onExpand?: () => void;
+}
+
+export default function StatsPanel({ onExpand }: StatsPanelProps) {
   const [stats, setStats] = useState<Stats | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -73,7 +77,10 @@ export default function StatsPanel() {
     }`}>
       {/* Header */}
       <button
-        onClick={() => setIsExpanded(!isExpanded)}
+        onClick={() => {
+          setIsExpanded(!isExpanded);
+          if (!isExpanded && onExpand) onExpand();
+        }}
         className="w-full p-4 text-left hover:bg-purple-900/20 transition-colors rounded-t-lg"
       >
         <div className="flex items-center justify-between">

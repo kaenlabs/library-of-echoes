@@ -373,3 +373,219 @@ body {
 .animate-pulseRing {
   animation: pulseRing 2s ease-in-out infinite;
 }
+
+/* Slow Typewriter - Centered Text */
+@keyframes typewriterSlow {
+  from {
+    max-width: 0;
+  }
+  to {
+    max-width: 100%;
+  }
+}
+
+.animate-typewriterSlow {
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 0;
+  animation: typewriterSlow 3s steps(50) 0.5s forwards;
+  border-right: 2px solid rgba(168, 85, 247, 0.8);
+  padding-right: 4px;
+}
+
+/* Fade In with Typewriter Effect */
+@keyframes fadeInTyper {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 0.9;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeInTyper {
+  animation: fadeInTyper 1s ease-out forwards;
+}
+
+/* Scanning Border Animations */
+@keyframes scanHorizontal {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(200%);
+    opacity: 0;
+  }
+}
+
+@keyframes scanVertical {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(200%);
+    opacity: 0;
+  }
+}
+
+.animate-scanHorizontal {
+  animation: scanHorizontal 3s ease-in-out infinite;
+}
+
+.animate-scanVertical {
+  animation: scanVertical 4s ease-in-out infinite;
+  animation-delay: 0.5s;
+}
+
+/* Typewriter Line Animation */
+@keyframes typewriterLine {
+  from {
+    width: 0;
+    opacity: 0;
+  }
+  to {
+    width: 100%;
+    opacity: 1;
+  }
+}
+
+.animate-typewriterLine {
+  overflow: hidden;
+  white-space: nowrap;
+  width: 0;
+  animation: typewriterLine 1.5s steps(50) forwards;
+}
+
+/* Custom Scrollbar for Info Panels */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(168, 85, 247, 0.6), rgba(236, 72, 153, 0.6));
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(168, 85, 247, 0.9), rgba(236, 72, 153, 0.9));
+}
+
+/* ================================================
+   HOLOGRAM EYE EFFECTS
+   ================================================ */
+
+/* Scanline Overlay */
+.scanline-overlay {
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.15) 0px,
+    transparent 1px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.15) 3px
+  );
+  animation: scanlineMove 8s linear infinite;
+}
+
+@keyframes scanlineMove {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+/* Vertical scan for eye */
+@keyframes scanVerticalEye {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(400%);
+    opacity: 0;
+  }
+}
+
+.animate-scanVerticalEye {
+  animation: scanVerticalEye 4s ease-in-out infinite;
+}
+
+/* Radial gradient helper */
+.bg-gradient-radial {
+  background: radial-gradient(circle, var(--tw-gradient-stops));
+}
+
+/* ================================================
+   EXIT ANIMATIONS
+   ================================================ */
+
+/* Wipe down effect */
+@keyframes wipeDown {
+  0% {
+    transform: translateY(0) scaleX(0);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(50vh) scaleX(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) scaleX(0);
+    opacity: 0;
+  }
+}
+
+.animate-wipeDown {
+  animation: wipeDown 1s ease-out forwards;
+}
+
+/* Particle burst */
+@keyframes particleBurst {
+  0% {
+    transform: translate(-50%, -50%) translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) translateY(-200px) scale(0);
+    opacity: 0;
+  }
+}
+
+.animate-particleBurst {
+  animation: particleBurst 1s ease-out forwards;
+}
+
+/* Count up animation */
+@keyframes countUp {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-countUp {
+  animation: countUp 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
