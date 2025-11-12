@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PWA Icon Generator</title>
+</head>
+<body>
+    <canvas id="canvas192" width="192" height="192"></canvas>
+    <canvas id="canvas512" width="512" height="512"></canvas>
+    
+    <script>
+        // 192x192 icon
+        const canvas192 = document.getElementById('canvas192');
+        const ctx192 = canvas192.getContext('2d');
+        
+        // Background gradient
+        const gradient192 = ctx192.createLinearGradient(0, 0, 192, 192);
+        gradient192.addColorStop(0, '#8b5cf6');
+        gradient192.addColorStop(1, '#6366f1');
+        ctx192.fillStyle = gradient192;
+        ctx192.fillRect(0, 0, 192, 192);
+        
+        // Echo waves
+        ctx192.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+        ctx192.lineWidth = 3;
+        [40, 60, 80].forEach(radius => {
+            ctx192.beginPath();
+            ctx192.arc(96, 96, radius, 0, Math.PI * 2);
+            ctx192.stroke();
+        });
+        
+        // Center circle
+        ctx192.fillStyle = '#fff';
+        ctx192.beginPath();
+        ctx192.arc(96, 96, 20, 0, Math.PI * 2);
+        ctx192.fill();
+        
+        // 512x512 icon (same design, bigger)
+        const canvas512 = document.getElementById('canvas512');
+        const ctx512 = canvas512.getContext('2d');
+        
+        const gradient512 = ctx512.createLinearGradient(0, 0, 512, 512);
+        gradient512.addColorStop(0, '#8b5cf6');
+        gradient512.addColorStop(1, '#6366f1');
+        ctx512.fillStyle = gradient512;
+        ctx512.fillRect(0, 0, 512, 512);
+        
+        ctx512.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+        ctx512.lineWidth = 8;
+        [100, 160, 220].forEach(radius => {
+            ctx512.beginPath();
+            ctx512.arc(256, 256, radius, 0, Math.PI * 2);
+            ctx512.stroke();
+        });
+        
+        ctx512.fillStyle = '#fff';
+        ctx512.beginPath();
+        ctx512.arc(256, 256, 50, 0, Math.PI * 2);
+        ctx512.fill();
+        
+        // Download links
+        setTimeout(() => {
+            const link192 = document.createElement('a');
+            link192.download = 'icon-192.png';
+            link192.href = canvas192.toDataURL();
+            link192.click();
+            
+            const link512 = document.createElement('a');
+            link512.download = 'icon-512.png';
+            link512.href = canvas512.toDataURL();
+            link512.click();
+        }, 1000);
+    </script>
+</body>
+</html>
