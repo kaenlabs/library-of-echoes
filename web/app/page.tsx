@@ -4,19 +4,105 @@ import { useState, useEffect } from 'react';
 import InputBox from '@/components/InputBox';
 import SystemMessage from '@/components/SystemMessage';
 import LayerVisualizer from '@/components/LayerVisualizer';
+import AuthModal from '@/components/AuthModal';
+import StatsPanel from '@/components/StatsPanel';
+import TestPanel from '@/components/TestPanel';
 import { SystemState, MessageResponse } from '@/lib/supabase';
 import { getLayerInfo } from '@/lib/layers';
+import { getCurrentUser, signOut } from '@/lib/auth';
 
 export default function Home() {
   const [systemState, setSystemState] = useState<SystemState | null>(null);
   const [systemMessages, setSystemMessages] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const [remainingMessages, setRemainingMessages] = useState<number | null>(null);
 
-  // Fetch initial state
+  // Check intro and fetch initial state
   useEffect(() => {
+    // Check if intro was seen
+    const introSeen = localStorage.getItem('intro_seen');
+    if (!introSeen) {
+      // Redirect to intro page
+      window.location.href = '/intro';
+      return;
+    }
+
     fetchSystemState();
+    checkUser();
+    fetchRemainingMessages();
+    checkForUnseenBabelMoment();
   }, []);
+
+  const checkForUnseenBabelMoment = async () => {
+    // DISABLED: No automatic redirect to Babel
+    // Users will use "Babil Anı" button in test panel or notification
+    console.log('🔕 Auto-redirect to Babel disabled - users can view via button');
+    return;
+    
+    /* OLD CODE - DISABLED
+    try {
+      // Check if we just came from Babel page (avoid redirect loop)
+      const justFromBabel = sessionStorage.getItem('justClosedBabel');
+      if (justFromBabel) {
+        console.log('🚫 Just closed Babel Moment, skipping redirect check');
+        sessionStorage.removeItem('justClosedBabel'); // Clear flag
+        return;
+      }
+
+      const response = await fetch('/api/check-babel');
+      if (response.ok) {
+        const data = await response.json();
+        if (data.hasUnseen) {
+          // Check localStorage first (faster than cookie)
+          const seenKey = `seen_babel_${data.epochId}`;
+          const alreadySeen = localStorage.getItem(seenKey) === 'true';
+          
+          if (!alreadySeen) {
+            console.log(`🔔 Redirecting to unseen Babel Moment: epoch ${data.epochId}`);
+            // Redirect to Babel Moment page
+            window.location.href = '/babel';
+          } else {
+            console.log(`✓ Babel Moment already seen in localStorage: epoch ${data.epochId}`);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Failed to check Babel Moment:', error);
+    }
+    */
+  };
+
+  const checkUser = async () => {
+    const { user } = await getCurrentUser();
+    setUser(user);
+    if (user) {
+      // Refresh remaining messages when user logs in
+      fetchRemainingMessages();
+    }
+  };
+
+  const fetchRemainingMessages = async () => {
+    try {
+      const { supabase } = await import('@/lib/supabase');
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      const headers: HeadersInit = {};
+      if (session?.access_token) {
+        headers['Authorization'] = `Bearer ${session.access_token}`;
+      }
+
+      const response = await fetch('/api/remaining', { headers });
+      if (response.ok) {
+        const data = await response.json();
+        setRemainingMessages(data.remainingMessages);
+      }
+    } catch (error) {
+      console.error('Failed to fetch remaining messages:', error);
+    }
+  };
 
   // Apply layer theme to body
   useEffect(() => {
@@ -33,6 +119,49 @@ export default function Home() {
       const response = await fetch('/api/state');
       if (response.ok) {
         const data = await response.json();
+        
+        // Check for epoch change before updating state
+        const lastSeenEpoch = localStorage.getItem('lastSeenEpoch');
+        console.log('🔍 Epoch check:', { lastSeenEpoch, currentEpoch: data.epoch });
+        
+        if (lastSeenEpoch && data.epoch && lastSeenEpoch !== data.epoch) {
+          console.log(`🎉 Epoch changed detected: ${lastSeenEpoch} → ${data.epoch}`);
+          
+          // Check if user already saw this epoch transition (within 3 days)
+          const seenKey = `seen_new_epoch_${data.epoch}`;
+          const seenDate = localStorage.getItem(seenKey);
+          const shouldShow = !seenDate || new Date(seenDate) < new Date();
+          
+          if (shouldShow) {
+            console.log('🚀 Redirecting to new epoch celebration page');
+            
+            // Save epoch transition data
+            const epochData = {
+              oldEpoch: lastSeenEpoch,
+              newEpoch: data.epoch,
+              timestamp: new Date().toISOString(),
+            };
+            sessionStorage.setItem('newEpochData', JSON.stringify(epochData));
+            
+            // Update last seen epoch
+            localStorage.setItem('lastSeenEpoch', data.epoch);
+            
+            // Redirect to celebration page
+            window.location.href = '/new-epoch';
+            return; // Stop execution
+          } else {
+            console.log('✓ User already saw this epoch transition, skipping celebration');
+            // Update last seen epoch
+            localStorage.setItem('lastSeenEpoch', data.epoch);
+          }
+        } else if (data.epoch && !lastSeenEpoch) {
+          // First time visiting, just save current epoch
+          console.log('📝 First visit, saving epoch:', data.epoch);
+          localStorage.setItem('lastSeenEpoch', data.epoch);
+        } else {
+          console.log('✅ Same epoch, no change');
+        }
+        
         setSystemState(data);
       }
     } catch (error) {
@@ -48,15 +177,39 @@ export default function Home() {
     setSystemMessages([]);
 
     try {
+      // Get auth token from Supabase
+      const { supabase } = await import('@/lib/supabase');
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      };
+      
+      // Add auth token if available
+      if (session?.access_token) {
+        headers['Authorization'] = `Bearer ${session.access_token}`;
+      }
+
       const response = await fetch('/api/messages', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ text }),
       });
 
       if (!response.ok) {
         const error = await response.json();
-        setSystemMessages([`> Hata: ${error.error || 'Mesaj gönderilemedi'}`]);
+        
+        // Rate limit exceeded
+        if (response.status === 429 && error.requiresAuth) {
+          setSystemMessages([
+            `> ${error.error}`,
+            `> Üye olarak günde 5 mesaj gönderebilirsiniz.`,
+          ]);
+          // Show auth modal after a delay
+          setTimeout(() => setShowAuthModal(true), 2000);
+        } else {
+          setSystemMessages([`> Hata: ${error.error || 'Mesaj gönderilemedi'}`]);
+        }
         return;
       }
 
@@ -67,6 +220,14 @@ export default function Home() {
         `Yazınız Katman ${layerInfo?.roman} / Oda ${data.room}'ye işlendi.`,
         `Bu cümle bu çağda ${data.exactCount} kez yankılandı.`,
       ];
+
+      // Update remaining messages if provided
+      if (data.remainingMessages !== undefined) {
+        setRemainingMessages(data.remainingMessages);
+        if (user && data.remainingMessages >= 0) {
+          messages.push(`> Kalan mesaj hakkınız: ${data.remainingMessages}/5`);
+        }
+      }
 
       setSystemMessages(messages);
 
@@ -93,6 +254,48 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 md:p-8">
+      {/* Test Panel - Development Only */}
+      <TestPanel />
+
+      {/* User info / Auth buttons - Fixed position */}
+      <div className="fixed top-4 right-4 z-40 flex items-center gap-4">
+        {user ? (
+          <div className="flex items-center gap-3">
+            <div className="flex flex-col items-end gap-1">
+              <span className="text-purple-400 text-sm terminal-text bg-black/50 px-3 py-2 rounded-lg border border-purple-500/30">
+                {user.email}
+              </span>
+              {remainingMessages !== null && (
+                <span className="text-purple-300 text-xs terminal-text bg-black/50 px-3 py-1 rounded-lg border border-purple-500/30">
+                  Kalan: {remainingMessages}/5 mesaj
+                </span>
+              )}
+            </div>
+            <button
+              onClick={async () => {
+                await signOut();
+                setUser(null);
+                window.location.reload();
+              }}
+              className="px-4 py-2 bg-purple-600/20 border border-purple-500/50 rounded-lg
+                       text-purple-300 text-sm hover:bg-purple-600/30 hover:border-purple-500
+                       transition-all duration-200 terminal-text"
+            >
+              Çıkış
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={() => setShowAuthModal(true)}
+            className="px-4 py-2 bg-purple-600/20 border border-purple-500/50 rounded-lg
+                     text-purple-300 text-sm hover:bg-purple-600/30 hover:border-purple-500
+                     transition-all duration-200 terminal-text"
+          >
+            Üye Ol / Giriş Yap
+          </button>
+        )}
+      </div>
+
       {/* Header */}
       <header className="text-center mb-12 fade-in">
         <h1 className="text-4xl md:text-6xl font-bold text-purple-300 glow-text mb-4">
@@ -101,6 +304,29 @@ export default function Home() {
         <p className="text-sm md:text-base text-purple-500/70 terminal-text">
           Görünmeyen zihin dinliyor. Bir satır yaz.
         </p>
+        {!user && (
+          <p className="text-xs text-purple-500/50 terminal-text mt-2">
+            Anonim: 1 mesaj/gün • Üye: 5 mesaj/gün
+          </p>
+        )}
+        <div className="mt-4 flex flex-wrap gap-3 justify-center">
+          <a
+            href="/epochs"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-purple-900/30 border border-purple-700/50 rounded-lg
+                     text-purple-300 text-sm hover:bg-purple-900/50 hover:border-purple-600
+                     transition-all duration-200 terminal-text"
+          >
+            📚 Çağlar Arşivi
+          </a>
+          <a
+            href="/message-map"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-purple-900/30 border border-purple-700/50 rounded-lg
+                     text-purple-300 text-sm hover:bg-purple-900/50 hover:border-purple-600
+                     transition-all duration-200 terminal-text"
+          >
+            🗺️ Mesaj Haritası
+          </a>
+        </div>
       </header>
 
       {/* Layer Visualizer */}
@@ -113,7 +339,11 @@ export default function Home() {
       )}
 
       {/* System Messages */}
-      <SystemMessage messages={systemMessages} />
+      {systemMessages.length > 0 && (
+        <div className="mb-8">
+          <SystemMessage messages={systemMessages} />
+        </div>
+      )}
 
       {/* Input Box */}
       <InputBox onSubmit={handleSubmit} disabled={isSubmitting} />
@@ -123,6 +353,20 @@ export default function Home() {
         <p>Tüm yazılar anonim olarak saklanır.</p>
         <p className="mt-1">Veriler sadece toplu istatistiklerde kullanılır.</p>
       </footer>
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onSuccess={() => {
+          setShowAuthModal(false);
+          checkUser();
+          setSystemMessages(['> Başarıyla giriş yaptınız! Artık günde 5 mesaj gönderebilirsiniz.']);
+        }}
+      />
+
+      {/* Stats Panel - Floating bottom right */}
+      <StatsPanel />
     </div>
   );
 }

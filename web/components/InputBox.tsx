@@ -10,8 +10,15 @@ interface InputBoxProps {
 export default function InputBox({ onSubmit, disabled }: InputBoxProps) {
   const [text, setText] = useState('');
 
+  const [honeypot, setHoneypot] = useState('');
+
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
+    // Honeypot check - if filled, it's a bot
+    if (honeypot) {
+      console.warn('Bot detected via honeypot');
+      return;
+    }
     if (text.trim() && !disabled) {
       onSubmit(text);
       setText('');
@@ -20,6 +27,23 @@ export default function InputBox({ onSubmit, disabled }: InputBoxProps) {
 
   return (
     <form onSubmit={handleSubmit} className="w-full max-w-2xl mx-auto">
+      {/* Honeypot field - hidden from users, visible to bots */}
+      <input
+        type="text"
+        name="website"
+        value={honeypot}
+        onChange={(e) => setHoneypot(e.target.value)}
+        tabIndex={-1}
+        autoComplete="off"
+        style={{ 
+          position: 'absolute', 
+          left: '-9999px',
+          width: '1px',
+          height: '1px'
+        }}
+        aria-hidden="true"
+      />
+      
       <div className="flex flex-col gap-4">
         <input
           type="text"
@@ -27,7 +51,7 @@ export default function InputBox({ onSubmit, disabled }: InputBoxProps) {
           onChange={(e) => setText(e.target.value)}
           placeholder="Bir satır yaz..."
           disabled={disabled}
-          maxLength={500}
+          maxLength={280}
           className="w-full px-6 py-4 bg-black/50 border border-purple-500/30 rounded-lg 
                    text-purple-200 placeholder-purple-500/50 
                    focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20
@@ -36,7 +60,7 @@ export default function InputBox({ onSubmit, disabled }: InputBoxProps) {
         />
         <button
           type="submit"
-          disabled={disabled || !text.trim()}
+          disabled={disabled || !text.trim() || text.trim().length < 3}
           className="px-8 py-3 bg-purple-600/20 border border-purple-500/50 rounded-lg
                    text-purple-200 hover:bg-purple-600/30 hover:border-purple-500
                    disabled:opacity-50 disabled:cursor-not-allowed
@@ -47,7 +71,7 @@ export default function InputBox({ onSubmit, disabled }: InputBoxProps) {
         </button>
       </div>
       <div className="mt-2 text-sm text-purple-500/50 text-right terminal-text">
-        {text.length} / 500
+        {text.length} / 280
       </div>
     </form>
   );

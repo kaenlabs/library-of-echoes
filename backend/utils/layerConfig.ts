@@ -1,5 +1,18 @@
-// Layer configuration with room system
-export const LAYER_CONFIG = [
+// Layer configuration with dynamic room system
+// This matches web/lib/layers.ts for consistency
+
+export interface LayerConfig {
+  index: number;
+  min: number;
+  max: number;
+  name: string;
+  theme: string;
+  roman: string;
+  rooms: number;           // Total number of rooms in this layer
+  roomCapacity: number;    // Messages per room before moving to next
+}
+
+export const LAYER_CONFIG: LayerConfig[] = [
   { index: 1, min: 0, max: 100, name: 'Void', theme: 'layer-1', roman: 'I', rooms: 10, roomCapacity: 10 },
   { index: 2, min: 100, max: 500, name: 'Whisper', theme: 'layer-2', roman: 'II', rooms: 10, roomCapacity: 40 },
   { index: 3, min: 500, max: 1000, name: 'Glitch', theme: 'layer-3', roman: 'III', rooms: 10, roomCapacity: 50 },
@@ -11,13 +24,11 @@ export const LAYER_CONFIG = [
   { index: 9, min: 100000, max: Infinity, name: 'Babel', theme: 'layer-9', roman: 'IX', rooms: 1024, roomCapacity: 1000 },
 ];
 
-// Babel threshold - use test value if in test mode
-const BABEL_THRESHOLD_PRODUCTION = 1024808; // Pi * 326144
-const BABEL_THRESHOLD_TEST = 20; // Test: sadece 20 mesaj
-export const BABEL_THRESHOLD = process.env.NEXT_PUBLIC_TEST_MODE === 'true' 
-  ? BABEL_THRESHOLD_TEST 
-  : BABEL_THRESHOLD_PRODUCTION;
+export const BABEL_THRESHOLD = 1024808; // Pi * 326144
 
+/**
+ * Get current layer based on total message count
+ */
 export function getCurrentLayer(totalMessages: number): number {
   for (const layer of LAYER_CONFIG) {
     if (totalMessages >= layer.min && totalMessages < layer.max) {
@@ -27,10 +38,17 @@ export function getCurrentLayer(totalMessages: number): number {
   return LAYER_CONFIG[LAYER_CONFIG.length - 1].index;
 }
 
-export function getLayerInfo(layerIndex: number) {
+/**
+ * Get layer information by index
+ */
+export function getLayerInfo(layerIndex: number): LayerConfig | undefined {
   return LAYER_CONFIG.find(layer => layer.index === layerIndex);
 }
 
+/**
+ * Calculate room index for a message
+ * Based on: (messagesInLayer / roomCapacity) % totalRooms
+ */
 export function getRoomIndex(messagesInLayer: number, layerIndex: number): number {
   const layer = LAYER_CONFIG.find(l => l.index === layerIndex);
   if (!layer) return 0;
@@ -39,38 +57,18 @@ export function getRoomIndex(messagesInLayer: number, layerIndex: number): numbe
   return Math.floor(messagesInLayer / layer.roomCapacity) % layer.rooms;
 }
 
-export function normalizeMessage(text: string): string {
-  return text
-    // First, remove all line breaks and carriage returns
-    .replace(/[\r\n]+/g, ' ')
-    .toLowerCase()
-    .trim()
-    // Remove all punctuation and special characters, keep letters (including Turkish), numbers, and spaces
-    .replace(/[^\p{L}\p{N}\s]/gu, '')
-    // Replace multiple spaces with single space
-    .replace(/\s+/g, ' ')
-    .trim();
+/**
+ * Get room capacity for a specific layer
+ */
+export function getRoomCapacity(layerIndex: number): number {
+  const layer = LAYER_CONFIG.find(l => l.index === layerIndex);
+  return layer?.roomCapacity || 10;
 }
 
-export function validateMessage(text: string): { valid: boolean; error?: string } {
-  const trimmed = text.trim();
-
-  if (!trimmed) {
-    return { valid: false, error: 'Mesaj boş olamaz' };
-  }
-
-  if (trimmed.length < 3) {
-    return { valid: false, error: 'Mesaj en az 3 karakter olmalı' };
-  }
-
-  if (trimmed.length > 280) {
-    return { valid: false, error: 'Mesaj çok uzun (max 280 karakter)' };
-  }
-
-  // Check for any line breaks (both \n and \r)
-  if (trimmed.includes('\n') || trimmed.includes('\r')) {
-    return { valid: false, error: 'Mesaj tek satır olmalı' };
-  }
-
-  return { valid: true };
+/**
+ * Get total rooms for a specific layer
+ */
+export function getTotalRooms(layerIndex: number): number {
+  const layer = LAYER_CONFIG.find(l => l.index === layerIndex);
+  return layer?.rooms || 10;
 }

@@ -1,0 +1,53 @@
+-- ================================================
+-- MIGRATION: Add Layer Transitions Support
+-- ================================================
+-- Adds ability to store layer transition snapshots
+-- in epochs.stats JSONB field
+
+-- No schema changes needed! epochs.stats already supports JSONB
+-- We'll just update the structure to include layerTransitions array
+
+-- Example structure in epochs.stats:
+-- {
+--   "totalMessages": 1000,
+--   "uniqueMessages": 500,
+--   "finalLayer": 3,
+--   "layerName": "Echo Chamber",
+--   "duration": 7,
+--   "layerTransitions": [
+--     {
+--       "layerIndex": 1,
+--       "layerName": "Sessizlik",
+--       "reachedAt": "2025-11-01T12:00:00Z",
+--       "messageCount": 100,
+--       "uniqueMessages": 80,
+--       "echoCount": 20,
+--       "topWords": [{"word": "hello", "count": 10}],
+--       "emotions": [{"emotion": "Merak", "percentage": 40, "color": "#00bcd4"}],
+--       "aiSummary": "Short summary of this layer",
+--       "comparisons": []
+--     },
+--     {
+--       "layerIndex": 2,
+--       "layerName": "Fısıltılar",
+--       "reachedAt": "2025-11-02T15:30:00Z",
+--       "messageCount": 500,
+--       "uniqueMessages": 350,
+--       "echoCount": 150,
+--       "topWords": [...],
+--       "emotions": [...],
+--       "aiSummary": "Summary",
+--       "comparisons": [
+--         {
+--           "comparedWith": "Katman 1",
+--           "messageGrowth": 400,
+--           "uniqueGrowth": 270,
+--           "echoGrowth": 130,
+--           "newTopWords": ["word1", "word2"]
+--         }
+--       ]
+--     }
+--   ]
+-- }
+
+-- Migration complete - no database changes needed!

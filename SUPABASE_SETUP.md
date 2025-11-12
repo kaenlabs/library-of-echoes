@@ -48,7 +48,18 @@ Sonuçlar:
    - **anon public** key: `eyJhbGc...` (uzun bir token)
    - **service_role** key: `eyJhbGc...` (sadece sunucu tarafı işlemleri için)
 
-## ⚙️ Adım 4: Environment Variables Ayarlama
+## ⚙️ Adım 4: Authentication (Kimlik Doğrulama) Ayarları
+
+### Email Authentication'ı Aktifleştirin
+
+1. **Sol menüden "Authentication" > "Providers"'a gidin**
+2. **Email provider'ın açık olduğunu kontrol edin**
+3. **"Settings" > "Auth"'a gidin**
+4. **Development için:**
+   - "Enable email confirmations" → **KAPATIN** (Geliştirme için)
+   - Production'da **AÇIN**
+
+## ⚙️ Adım 5: Environment Variables Ayarlama
 
 ### Web Uygulaması (Next.js)
 
@@ -67,7 +78,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
 - `.env.local` dosyası `.gitignore`'da var, GitHub'a yüklenmez
 - API keys'leri asla public repository'e commit etmeyin
 
-## 🧪 Adım 5: Web Uygulamasını Test Etme
+## 🧪 Adım 6: Web Uygulamasını Test Etme
 
 1. **Terminal'de `web` dizinine gidin:**
 ```bash
@@ -81,10 +92,18 @@ npm run dev
 
 3. **Tarayıcıda açın:** http://localhost:3000
 
-4. **Test:**
+4. **Test (Anonim Kullanıcı):**
    - Sayfa yüklendiğinde "Age 1, Katman I - Void" görünmeli
-   - Bir mesaj yazıp gönderin
+   - Bir mesaj yazıp gönderin ✅
    - Sistem mesajı: "Yazınız Katman I / Oda X'ye işlendi" görmeli
+   - İkinci mesaj göndermeye çalışın ❌
+   - "Günde sadece 1 mesaj gönderebilir" hatası almalısınız
+
+5. **Test (Üye Kullanıcı):**
+   - Sağ üstteki "Üye Ol / Giriş Yap" butonuna tıklayın
+   - Email ve şifre ile kayıt olun
+   - Giriş yapın
+   - Günde 5 mesaj gönderebilirsiniz ✅
 
 ### 🐛 Sorun mu yaşıyorsunuz?
 
@@ -98,7 +117,7 @@ npm run dev
 - Internet bağlantınızı kontrol edin
 - Browser console'da detaylı hata mesajlarına bakın (F12)
 
-## 📊 Adım 6: Verileri Kontrol Etme
+## 📊 Adım 7: Verileri Kontrol Etme
 
 Supabase Dashboard'da:
 

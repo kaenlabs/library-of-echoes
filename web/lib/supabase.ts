@@ -74,4 +74,5 @@ export interface MessageResponse {
   layer: number;
   room: number;
   exactCount: number;
+  remainingMessages?: number;
 }
