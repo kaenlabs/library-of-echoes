@@ -67,7 +67,22 @@ export default function Home() {
 
   // Check intro and fetch initial state
   useEffect(() => {
-    // Check if intro was seen
+    const isMobile = window.innerWidth < 768;
+    
+    // Skip intro check on mobile - go straight to app
+    if (isMobile) {
+      console.log('📱 Mobile detected, skipping intro check');
+      setIsIntroChecked(true);
+      
+      // Fetch data
+      fetchSystemState();
+      checkUser();
+      fetchRemainingMessages();
+      checkForUnseenBabelMoment();
+      return;
+    }
+    
+    // Desktop: Check if intro was seen
     const introSeen = localStorage.getItem('intro_seen');
     if (!introSeen) {
       // Redirect to intro page

@@ -82,15 +82,15 @@ export default function IntroPage() {
   useEffect(() => {
     // Mobile detection - skip intro on mobile
     const isMobile = window.innerWidth < 768;
+    
     if (isMobile) {
-      // Skip intro on mobile devices
-      const skipDelay = setTimeout(() => {
-        router.push('/');
-      }, 100);
-      return () => clearTimeout(skipDelay);
+      // Immediately redirect on mobile - no delay
+      console.log('📱 Mobile detected, skipping intro');
+      router.push('/');
+      return; // Stop all timers
     }
 
-    // Enable skip after 2 seconds
+    // Desktop: Enable skip after 2 seconds
     const skipTimer = setTimeout(() => setSkipEnabled(true), 2000);
 
     // Stage progression with sounds
@@ -148,8 +148,15 @@ export default function IntroPage() {
     router.push('/');
   };
 
-  // Check if already seen
+  // Check if already seen OR if mobile
   useEffect(() => {
+    const isMobile = window.innerWidth < 768;
+    if (isMobile) {
+      console.log('📱 Mobile detected (localStorage check), redirecting');
+      router.push('/');
+      return;
+    }
+    
     const seen = localStorage.getItem('intro_seen');
     if (seen === 'true') {
       router.push('/');
