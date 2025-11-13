@@ -182,14 +182,23 @@ export default function MessageMapPage() {
                             title={`Oda ${room.roomId}: ${room.messageCount} mesaj (${room.layerName})`}
                           >
                             <div
-                              className="w-full aspect-square rounded border border-purple-900/50 hover:border-purple-400 transition-all cursor-pointer"
+                              className="w-full aspect-square rounded border border-purple-900/50 hover:border-purple-400 active:border-purple-300 transition-all cursor-pointer"
                               style={{
                                 backgroundColor: getLayerColor(room.layer),
                                 opacity: 0.3 + (room.messageCount / epoch.totalMessages) * 0.7,
                               }}
+                              onClick={(e) => {
+                                // Mobile: Show tooltip on click
+                                e.currentTarget.nextElementSibling?.classList.toggle('hidden');
+                              }}
                             />
-                            {/* Tooltip */}
-                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block z-10 pointer-events-none">
+                            {/* Tooltip - Mobilde de çalışır */}
+                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block z-10 pointer-events-none"
+                              onClick={(e) => {
+                                // Mobilde tooltip'i kapatmak için
+                                e.currentTarget.classList.add('hidden');
+                              }}
+                            >
                               <div className="bg-black border-2 border-purple-500 rounded-lg p-3 text-xs terminal-text whitespace-nowrap shadow-lg">
                                 <div className="font-bold text-purple-100 mb-1">
                                   🏠 Oda {room.roomId}

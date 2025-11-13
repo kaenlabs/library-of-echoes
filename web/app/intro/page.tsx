@@ -80,6 +80,16 @@ export default function IntroPage() {
   };
 
   useEffect(() => {
+    // Mobile detection - skip intro on mobile
+    const isMobile = window.innerWidth < 768;
+    if (isMobile) {
+      // Skip intro on mobile devices
+      const skipDelay = setTimeout(() => {
+        router.push('/');
+      }, 100);
+      return () => clearTimeout(skipDelay);
+    }
+
     // Enable skip after 2 seconds
     const skipTimer = setTimeout(() => setSkipEnabled(true), 2000);
 

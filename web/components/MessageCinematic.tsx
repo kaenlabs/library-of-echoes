@@ -104,8 +104,26 @@ export default function MessageCinematic({ isActive, messageData, onComplete }: 
     <div 
       className="fixed inset-0 z-50 flex items-center justify-center"
       onClick={(e) => {
-        // Stats fazında tıklama ile kapanabilir
-        if (phase === 'stats') {
+        // Tıklama ile ilerleme (mobil destek)
+        if (canProgress && phase !== 'idle') {
+          if (phase === 'stats') {
+            skip();
+          } else {
+            nextPhase();
+          }
+        } else if (phase === 'stats') {
+          skip();
+        }
+      }}
+      onTouchEnd={(e) => {
+        // Touch desteği (mobil)
+        if (canProgress && phase !== 'idle') {
+          if (phase === 'stats') {
+            skip();
+          } else {
+            nextPhase();
+          }
+        } else if (phase === 'stats') {
           skip();
         }
       }}
@@ -136,24 +154,24 @@ export default function MessageCinematic({ isActive, messageData, onComplete }: 
         </div>
       </button>
 
-      {/* Continue/Next Phase Prompt - Üst sağ, liquid glass style */}
+      {/* Continue/Next Phase Prompt - Daha büyük ve merkezde (mobil uyumlu) */}
       {canProgress && phase !== 'stats' && (
         <div
-          className="absolute top-24 right-8 font-mono text-center pointer-events-none"
+          className="absolute bottom-20 left-1/2 -translate-x-1/2 font-mono text-center pointer-events-none"
           style={{
-            animation: 'fadeInRight 0.6s ease-out forwards',
+            animation: 'fadeInBounce 0.8s ease-out forwards',
             opacity: 0,
             zIndex: 50,
           }}
         >
           <div 
-            className="relative px-6 py-3 rounded-xl overflow-hidden"
+            className="relative px-8 py-4 rounded-2xl overflow-hidden"
             style={{
-              background: 'rgba(16, 185, 129, 0.1)',
+              background: 'rgba(16, 185, 129, 0.2)',
               backdropFilter: 'blur(20px) saturate(180%)',
               WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-              border: '1px solid rgba(16, 185, 129, 0.3)',
-              boxShadow: '0 8px 32px rgba(16, 185, 129, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+              border: '2px solid rgba(16, 185, 129, 0.5)',
+              boxShadow: '0 12px 48px rgba(16, 185, 129, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
             }}
           >
             {/* Glass shine effect */}
@@ -165,10 +183,10 @@ export default function MessageCinematic({ isActive, messageData, onComplete }: 
             />
             
             <div className="relative flex items-center gap-3">
-              <div className="text-green-400 text-lg animate-pulse">⏎</div>
-              <div className="text-green-300 text-sm font-medium">ENTER</div>
+              <div className="text-green-400 text-2xl animate-pulse">👆</div>
+              <div className="text-green-300 text-lg font-bold">TIKLA / ENTER</div>
             </div>
-            <div className="text-green-400/60 text-[10px] mt-1 tracking-wide">
+            <div className="text-green-400/80 text-sm mt-2 tracking-wide">
               Devam et
             </div>
           </div>
