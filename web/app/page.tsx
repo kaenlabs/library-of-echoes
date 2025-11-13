@@ -67,10 +67,13 @@ export default function Home() {
 
   // Check intro and fetch initial state
   useEffect(() => {
+    // Check if forced desktop intro (from test panel)
+    const forceDesktop = sessionStorage.getItem('forceDesktopIntro');
+    
     const isMobile = window.innerWidth < 768;
     
-    // Skip intro check on mobile - go straight to app
-    if (isMobile) {
+    // Skip intro check on mobile - go straight to app (unless forced)
+    if (isMobile && !forceDesktop) {
       console.log('📱 Mobile detected, skipping intro check');
       setIsIntroChecked(true);
       

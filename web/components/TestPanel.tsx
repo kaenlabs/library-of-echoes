@@ -152,6 +152,8 @@ export default function TestPanel() {
             <button
               onClick={() => {
                 localStorage.removeItem('intro_seen');
+                // Force desktop mode for intro testing
+                sessionStorage.setItem('forceDesktopIntro', 'true');
                 window.location.href = '/intro';
               }}
               className="w-full px-3 py-1.5 bg-pink-900/50 hover:bg-pink-800/50 border border-pink-700 text-pink-200 rounded

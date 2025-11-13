@@ -80,14 +80,22 @@ export default function IntroPage() {
   };
 
   useEffect(() => {
-    // Mobile detection - skip intro on mobile
-    const isMobile = window.innerWidth < 768;
-    
-    if (isMobile) {
-      // Immediately redirect on mobile - no delay
-      console.log('📱 Mobile detected, skipping intro');
-      router.push('/');
-      return; // Stop all timers
+    // Check if forced desktop intro (from test panel)
+    const forceDesktop = sessionStorage.getItem('forceDesktopIntro');
+    if (forceDesktop) {
+      console.log('🖥️ Forced desktop intro mode');
+      sessionStorage.removeItem('forceDesktopIntro');
+      // Continue with desktop intro
+    } else {
+      // Mobile detection - skip intro on mobile
+      const isMobile = window.innerWidth < 768;
+      
+      if (isMobile) {
+        // Immediately redirect on mobile - no delay
+        console.log('📱 Mobile detected, skipping intro');
+        router.push('/');
+        return; // Stop all timers
+      }
     }
 
     // Desktop: Enable skip after 2 seconds
@@ -150,15 +158,17 @@ export default function IntroPage() {
 
   // Check if already seen OR if mobile
   useEffect(() => {
+    const forceDesktop = sessionStorage.getItem('forceDesktopIntro');
+    
     const isMobile = window.innerWidth < 768;
-    if (isMobile) {
+    if (isMobile && !forceDesktop) {
       console.log('📱 Mobile detected (localStorage check), redirecting');
       router.push('/');
       return;
     }
     
     const seen = localStorage.getItem('intro_seen');
-    if (seen === 'true') {
+    if (seen === 'true' && !forceDesktop) {
       router.push('/');
     }
   }, [router]);

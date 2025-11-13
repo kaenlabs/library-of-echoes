@@ -106,25 +106,13 @@ export default function MessageCinematic({ isActive, messageData, onComplete }: 
       onClick={(e) => {
         // Tıklama ile ilerleme (mobil destek)
         if (canProgress && phase !== 'idle') {
-          if (phase === 'stats') {
-            skip();
-          } else {
-            nextPhase();
-          }
-        } else if (phase === 'stats') {
-          skip();
+          nextPhase(); // Her fazda nextPhase çağır
         }
       }}
       onTouchEnd={(e) => {
         // Touch desteği (mobil)
         if (canProgress && phase !== 'idle') {
-          if (phase === 'stats') {
-            skip();
-          } else {
-            nextPhase();
-          }
-        } else if (phase === 'stats') {
-          skip();
+          nextPhase(); // Her fazda nextPhase çağır
         }
       }}
     >
@@ -161,7 +149,7 @@ export default function MessageCinematic({ isActive, messageData, onComplete }: 
           style={{
             animation: 'fadeInBounce 0.8s ease-out forwards',
             opacity: 0,
-            zIndex: 50,
+            zIndex: 100, // Diğer elementlerin üstünde
           }}
         >
           <div 
@@ -231,12 +219,15 @@ export default function MessageCinematic({ isActive, messageData, onComplete }: 
               style={{
                 animation: 'fadeInBounce 1s ease-out 1.5s forwards',
                 opacity: 0,
-                zIndex: 40,
+                zIndex: 100, // En üstte
               }}
             >
               <div 
                 className="relative px-12 py-6 rounded-2xl cursor-pointer overflow-hidden transition-all duration-300 hover:scale-105"
-                onClick={skip}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  nextPhase(); // Stats'tan sonra closing'e geç
+                }}
                 style={{
                   background: 'rgba(139, 92, 246, 0.15)',
                   backdropFilter: 'blur(25px) saturate(200%)',
